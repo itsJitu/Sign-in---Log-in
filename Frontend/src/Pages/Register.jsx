@@ -4,43 +4,66 @@ import { Link } from 'react-router-dom'
 
 function Register() {
 
-   const [data, setData ] = useState({
-    name: "",
-    email: "",
-    password: "",
-   });
+   const [name, setName ] = useState("")
+   const [email, setEmail] = useState("")
+   const [password, setPassword] = useState("")
 
-  const registerUser = (e) => {
+  const registerUser = async (e) => {
     e.preventDefault()
-  }
+    setMessage("");
+    try {
+      const res = await fetch("http://localhost:8080/api/v1/registration", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          password: Number(password),
+          email
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setMessage("register Succelfully")
+        setName("");
+        setEmail("");
+        setPassword("");
+      } else {
+        setMessage(data.error || "Error Something Wrong ");
+      }
+    } catch (err) {
+      setMessage("Error:" + error.message);
+    }
+  };
+
+
 
   return (
     <>
     <div>
       <form onSubmit={registerUser}>
 
-        <lable>Name</lable>
+        <label>Name</label>
         <input 
         type="text" 
         placeholder='Enter Name' 
-        value={ data.name } 
-        onChange={(e) => setData({...data, name: e.target.value})} 
+        value={ name } 
+        onChange={e => setName( e.target.value)} 
         />
 
-        <lable>Email</lable>
+        <label>Email</label>
         <input 
         type="email" 
         placeholder='Enter Email-id' 
-        value={ data.email } 
-        onChange={(e) => setData({...data, email: e.target.value})} 
+        value={ email } 
+        onChange={e => setEmail( e.target.value)}  
         / >
 
         <label>Password</label>
         <input 
         type='text' 
         placeholder='Enter a Password' 
-        value={ data.password } 
-        onChange={(e) => setData({...data, Password: e.target.value})} 
+        value={ password } 
+       onChange={e => setPassword( e.target.value)} 
         />
 
       </form>
@@ -52,7 +75,6 @@ function Register() {
       <Link to="/Login">Already have an Account. Login</Link>
     </div>
     </>
-  );
-}
+)};
 
 export default Register
